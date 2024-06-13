@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <style>
+       body {
+            font-family: 'Courier New', monospace;
+            background-color: #fbfed8;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            background-color: #f8cb97;
+            width: 30%;
+            margin-left: 530px;
+        }
+        .addu {
+            background-color: #8c86fd;
+            
+        }
+        .addu:hover {
+            background-color: #58f2f4;
+        }
+        input[type="text"] {
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="button"] {
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #dfbdf5;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .strikethrough {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .dele {
+            background-color: #fab4b4;
+            color: #000000;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .dele:hover {
+            background-color: #f8cb97;
+        }
+        .opt{
+            align-items: center;
+            margin-left: 600px;
+            justify-content: center;
+            width: 20%;
+        }
+        .cl{
+            align-items: center;
+            margin-left: 600px;
+            justify-content: center;
+            width: 20%;
+        }
+        .but {
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            width: 60%;
+            background-color: #04c1c4;
+            color: #fff;
+            margin-left: 18px;
+        }
+
+        .but:hover {
+            background-color: #58f2f4;
+        }
+        #activeCount{
+            margin-left: 550px;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+        }
+        h2{
+            margin-left: 550px;
+            justify-content: center;
+            
+        }
+    </style>
+</head>
+<body>
+    <h1>TO DO LIST</h1>
+    <h2> List Items</h2>
+    <span id="activeCount">0</span><br>
+    <div class="container">
+        
+        <input type="text" id="inp" placeholder="Add New Task">
+        <input type="button" onclick="add()" value="Add" class="addu">
+        <ul id="listu"></ul>
+    </div>
+    <div class="opt">
+        <input type="button" class="but" value="Active"><br>
+        <input type="button" class="but" value="Completed"><br>
+        <input type="button" class="but" value="All">
+        <input type="button" class="but" value="Clear Completed">
+    </div>
+    <script>
+        let store = [];
+        let todo = {name: 'hello', is_done: false}
+        
+        function add() {
+            var inpval = document.getElementById("inp").value.trim();
+            if (inpval === '') {
+                alert("Field cannot be empty");
+                return;
+            }
+
+            var li = document.createElement("li");
+            var textSpan = document.createElement("span");
+            textSpan.textContent = inpval;
+            textSpan.addEventListener('click', function(event) {
+                event.stopPropagation();
+                textSpan.classList.toggle('strikethrough');
+                updateActiveCount();
+            });
+
+            // Create the delete button
+            var del = document.createElement("span");
+            del.textContent = "Delete";
+            del.className = "dele";
+            del.onclick = function(event) {
+                event.stopPropagation(); // Prevent the click event from toggling strikethrough
+                li.remove();
+                updateActiveCount();
+            };
+
+            li.appendChild(textSpan);
+            li.appendChild(del);
+            document.getElementById("listu").appendChild(li);
+            document.getElementById("inp").value = "";
+            updateActiveCount();
+            };
+
+
+  
+            document.querySelector('.but[value="Active"]').addEventListener('click', function() {
+                filterTasks('active');
+            });
+
+            document.querySelector('.but[value="Completed"]').addEventListener('click', function() {
+                filterTasks('completed');
+            });
+
+            document.querySelector('.but[value="All"]').addEventListener('click', function() {
+                filterTasks('all');
+            });
+            document.querySelector('.but[value="Clear Completed"]').addEventListener('click', function() {
+                clearcomp('clear');
+            });
+
+            function filterTasks(status) {
+                var tasks = document.querySelectorAll('#listu li');
+                tasks.forEach(function(task) {
+                    var isCompleted = task.querySelector('span').classList.contains('strikethrough');
+                    if (status === 'active' && isCompleted) {
+                        task.style.display = 'none';
+                    } else if (status === 'completed' && !isCompleted) {
+                        task.style.display = 'none';
+                    } else {
+                        task.style.display = 'flex';
+                    }
+                });
+            }
+
+            function clearcomp() {
+                var tasks = document.querySelectorAll('#listu li');
+                tasks.forEach(function(task) {
+                    var isCompleted = task.querySelector('span').classList.contains('strikethrough');
+                    if (isCompleted) {
+                        task.remove();
+                        updateActiveCount();
+                    }
+                });
+            }
+            function updateActiveCount() {
+                var activeCount = document.querySelectorAll('#listu li:not(.strikethrough)').length;
+                document.getElementById('activeCount').textContent = activeCount;      
+            }
+    </script>
+
+</body>
+</html>
