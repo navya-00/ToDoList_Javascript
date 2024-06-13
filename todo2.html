@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <style>
+       body {
+            font-family: 'Courier New', monospace;
+            background-color: #fbfed8;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            background-color: #f8cb97;
+            width: 30%;
+            margin-left: 530px;
+        }
+        .addu {
+            background-color: #8c86fd;
+            
+        }
+        .addu:hover {
+            background-color: #58f2f4;
+        }
+        input[type="text"] {
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="button"] {
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #dfbdf5;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .strikethrough {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .dele {
+            background-color: #fab4b4;
+            color: #000000;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .dele:hover {
+            background-color: #f8cb97;
+        }
+        .opt{
+            align-items: center;
+            margin-left: 600px;
+            justify-content: center;
+            width: 20%;
+        }
+        .cl{
+            align-items: center;
+            margin-left: 600px;
+            justify-content: center;
+            width: 20%;
+        }
+        .but {
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            width: 60%;
+            background-color: #04c1c4;
+            color: #fff;
+            margin-left: 18px;
+        }
+
+        .but:hover {
+            background-color: #58f2f4;
+        }
+        #activeCount{
+            margin-left: 550px;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-size: large;
+            font-weight: bold;
+        }
+        h2{
+            margin-left: 550px;
+            justify-content: center;
+            
+        }
+    </style>
+</head>
+<body>
+    <h1>TO DO LIST</h1>
+    <h2> Pending List Items</h2>
+    <span id="activeCount">0</span><br>
+    <div class="container">
+        
+        <input type="text" id="inp" placeholder="Add New Task" onkeypress="checkEnter(event)">
+        <input type="button" onclick="add()" value="Add" class="addu">
+        <ul id="listu">  </ul>
+    </div>
+    <div class="opt">
+        <input type="button" class="but" value="Active" onclick="active()" ><br>
+        <input type="button" class="but" value="Completed" onclick="completed()"><br>
+        <input type="button" class="but" value="All" onclick="display()">
+        <input type="button" class="but" value="Clear Completed" onclick="clearCompleted()">
+    </div>
+    <script>
+        let todoli=[];
+        function add() {
+            let task = document.getElementById("inp").value.trim();
+            if (task === "") {
+                //alert("Task cannot be empty");
+                return;
+            }
+            let todo = {
+                name: task,
+                isdone: false
+            };
+            todoli.push(todo);
+            document.getElementById("inp").value = ''; 
+            display(); 
+        }
+        function display() {
+            const listdiv = document.getElementById('listu');
+            listdiv.innerHTML = '';
+            for (let i = 0; i < todoli.length; i++) {
+                let listItem = document.createElement('li');
+                listItem.textContent = todoli[i].name;
+                if (todoli[i].isdone) {
+                    listItem.classList.add('strikethrough'); 
+                } else {
+                    listItem.classList.remove('strikethrough');
+                }
+                listItem.addEventListener('click', function(event) {
+                    check(i);
+                });
+                let del = document.createElement('button');
+                del.textContent = "Delete";
+                del.className = "dele";
+                del.onclick = function(event) {
+                    event.stopPropagation();
+                    remove(i);
+                };
+                listItem.appendChild(del);
+                listdiv.appendChild(listItem);
+            }
+            updateActiveCount();
+            console.log(todoli);
+        }
+        
+        function remove(index) {
+            todoli.splice(index, 1);
+            display(); 
+        }
+        function check(i){
+            if(todoli[i].isdone===false){
+                todoli[i].isdone=true;
+            }
+            else{
+                todoli[i].isdone=false;
+            }
+            display();
+        }
+        
+        function active() {
+            const listdiv = document.getElementById('listu');
+            listdiv.innerHTML = ''; 
+            for (let i = 0; i < todoli.length; i++) {
+                if (!todoli[i].isdone) {
+                    let listItem = document.createElement('li');
+                    listItem.textContent = todoli[i].name;
+                    listItem.addEventListener('click', function(event) {
+                        check(i);
+                    });
+                    let del = document.createElement('button');
+                    del.textContent = "Delete";
+                    del.className = "dele";
+                    del.onclick = function(event) {
+                        event.stopPropagation();
+                        remove(i);
+                    };
+                    listItem.appendChild(del);
+                    listdiv.appendChild(listItem);
+                }
+            }
+            updateActiveCount();
+        }
+        function completed() {
+            const listdiv = document.getElementById('listu');
+            listdiv.innerHTML = ''; 
+            for (let i = 0; i < todoli.length; i++) {
+                if (todoli[i].isdone) {
+                    let listItem = document.createElement('li');
+                    listItem.textContent = todoli[i].name;
+                    listItem.classList.add('strikethrough'); 
+                    listItem.addEventListener('click', function(event) {
+                        check(i);
+                    });
+                    let del = document.createElement('button');
+                    del.textContent = "Delete";
+                    del.className = "dele";
+                    del.onclick = function(event) {
+                        event.stopPropagation();
+                        remove(i);
+                    };
+                    listItem.appendChild(del);
+                    listdiv.appendChild(listItem);
+                }
+            }
+        }
+
+        function updateActiveCount() {
+            let i=0;
+            let count=0;
+            for(i=0;i<todoli.length;i++){
+                if(todoli[i].isdone===false){
+                    count++;
+                }
+            }
+            document.getElementById('activeCount').textContent = count;
+        }
+        function clearCompleted() {
+            for(let i=0;i<todoli.length;i++){
+                if(todoli[i].isdone===true){
+                    todoli.splice(i, 1);
+                }
+            }
+            updateActiveCount();
+            display();
+        }
+        function checkEnter(event) {
+            if (event.keyCode === 13) {
+                add();
+            }
+        }
+    </script>
+</body>
+</html>
